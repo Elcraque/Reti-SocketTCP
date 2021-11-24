@@ -139,9 +139,7 @@ int main(void){
     }
     buf[bytesRcvd] = '\0';
 
-    // prints an error message if the string received from
-    // the server is "END CLIENT PROCESS"
-    // otherwise prints the string received from the server
+    // if recive END CLIENT PROCESS, close the client else print the resoult
     puts("");
     if (strcmp(buf, "END CLIENT PROCESS") == 0) {
         puts("closing connection");
