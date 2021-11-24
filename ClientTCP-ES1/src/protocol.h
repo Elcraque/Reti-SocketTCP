@@ -104,28 +104,29 @@ void calculate(char *answermsg, const char *buf)
     char op1_str[OPSIZE] = "";
     char op2_str[OPSIZE] = "";
 
-    int op1;
-    int op2;
+    int op1; // 1st operand
+    int op2; // 2nd operand
 
-    int i, j;
+    int i = 0;
+    int j = 0;
 
-    // gets the substring containing the first operand
+    // gets the substring containing the 1st operand
     for (i = 0, j = 2; buf[j] != '|'; ++i, ++j) {
         op1_str[i] = buf[j];
     }
 
-    // gets the substring containing the second operand
+    // gets the substring containing the 2nd operand
     for (i = 0, j = j + 1; buf[j] != '\0'; ++i, ++j) {
         op2_str[i] = buf[j];
     }
 
-    // converts the above strings to integers
+    // converts the operand strings to integers
     op1 = strtol(op1_str, NULL, 0);
     op2 = strtol(op2_str, NULL, 0);
 
     char tmp[OPSIZE + 1] = "";
 
-    // computes the requested operation
+
     switch(opcode) {
     case '+':
         strcpy(answermsg, "Addition result: ");
@@ -148,14 +149,14 @@ void calculate(char *answermsg, const char *buf)
             snprintf(tmp, OPSIZE,"%.2f", division(op1,op2));
             strcat(answermsg, tmp);
         } else {
-            strcpy(answermsg, "Error: attempt to divide by 0!");
+            strcpy(answermsg, "Error! attempt to divide by 0!");
         }
         break;
     case '=':
     	strcpy(answermsg, "END CLIENT PROCESS");
      	break;
     default:
-        strcpy(answermsg, "END CLIENT PROCESS");
+        strcpy(answermsg, "END CLIENT PROCESS"); // If any error accurred, by default the server sends the closing string message
         break;
     }
 }

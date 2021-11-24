@@ -108,7 +108,6 @@ int main(void){
     	 }
 
     }while(isoperator(opcode) != TRUE || isoperand(op1_flag) != TRUE || isoperand(op2_flag) != TRUE ||  parse != 3);
-   // getchar(); // avoids terminal closing
 
     // builds the message for the server
 
