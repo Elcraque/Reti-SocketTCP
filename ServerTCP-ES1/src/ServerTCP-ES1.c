@@ -14,13 +14,12 @@
 
 #include "protocol.h"
 
-int main(void)
-{
+int main(void){
 #if defined WIN32
     WSADATA wsaData;
-    int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+    int result = WSAStartup(MAKEWORD(2,2), &wsaData);
 
-    if (iResult != 0) {
+    if (result != NO_ERROR) {
         fprintf(stderr, "Error in WSAStartup().\n");
         return -1;
     }
@@ -70,7 +69,7 @@ int main(void)
     char answermsg[ANSSIZE + 1] = ""; // answer for the client
     int str_len;
 
-    while(1) {
+    while(TRUE) {
         memset(buf, 0, BUFFERSIZE); // initializes buffer
         client_len = sizeof(cad);
 
@@ -101,7 +100,7 @@ int main(void)
         }
 
         // computes the result and builds a message for the client
-        compute_result(answermsg, buf);
+        calculate(answermsg, buf);
 
         // sends the message to the client
         str_len = strlen(answermsg);

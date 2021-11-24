@@ -12,12 +12,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define PORT 5193 // port
+#define PORT 80 // port
 #define QLEN 5 // request queue
 #define BUFFERSIZE 1024 // receive buffer dim
-#define ANSSIZE 80 // max size for the answer to send to the client
+#define ANSSIZE 80 // max dim for the answer to send to the client
 #define OPSIZE 20 // max operand dim
 #define MSGSIZE 43 // max message dim
+#define TRUE 1 // boolean value
+#define NO_ERROR 0 // WSASTARTUP Error flag
 
 /////////////////////// functions definitions ///////////////////////
 
@@ -41,6 +43,51 @@ float division(int a,int b)
 	return (float) a/b;
 }
 
+const char* getfield(char* line, int num){     //This function takes a line, divides it, and returns the field indicated by the number num.
+	char *linecopy = strdup(line);
+	const char* tok;
+	for (tok = strtok(linecopy, " ");
+			tok && *tok;
+			tok = strtok(NULL, " \0"))
+	{
+		if (!--num)
+			return tok;
+	}
+	return NULL;
+}
+
+int isoperator (const char operator){
+	int i=0;
+	if (operator == '+' || operator == '*' || operator == '-' || operator == '/' || operator == '=' ){
+		i=1;
+	}
+	return i;
+}
+
+int isoperand (char operand[]){
+	int i = 0;
+	int k = 0;
+	while(operand[k] != '\0'){
+		if (isdigit(operand[k])){
+			i = 1;
+		}
+		k++;
+	}
+	return i;
+}
+
+int parselen(char toparse[]){
+	int i = 0;
+	int counter=0;
+	while(toparse[i] != '\0'){
+		if(toparse[i] == ' '){
+			counter++;
+		}
+		i++;
+	}
+	return counter+1;
+}
+
 void clearwinsock()
 {
 #if defined WIN32
@@ -48,7 +95,7 @@ void clearwinsock()
 #endif
 }
 
-void compute_result(char *answermsg, const char *buf)
+void calculate(char *answermsg, const char *buf)
 {
     // gets data from the received string
     char opcode = buf[0];
@@ -101,7 +148,7 @@ void compute_result(char *answermsg, const char *buf)
             snprintf(tmp, OPSIZE,"%.2f", division(op1,op2));
             strcat(answermsg, tmp);
         } else {
-            strcpy(answermsg, "Error: attempt to divide by 0!");
+            strcpy(answermsg, "Error! attempt to divide by 0!");
         }
         break;
     case '=':
