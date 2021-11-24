@@ -95,70 +95,71 @@ void clearwinsock()
 #endif
 }
 
-void calculate(char *answermsg, const char *buf)
-{
-    // gets data from the received string
-    char opcode = buf[0];
+void calculate(char *answermsg, const char *buf){
+    // gets operand from the received string in the 1st position
+    char operand = buf[0];
 
-    // temporary buffers to convert the operands to integers
-    char op1_str[OPSIZE] = "";
-    char op2_str[OPSIZE] = "";
+    // temporary variables of operands converted into strings
+    char operator1stTostr[OPSIZE] = "";
+    char operator2stTostr[OPSIZE] = "";
 
-    int op1; // 1st operand
-    int op2; // 2nd operand
+    int operator1st; // 1st operand
+    int operator2st; // 2nd operand
 
     int i = 0;
     int j = 0;
 
-    // gets the substring containing the 1st operand
+    // gets the 1st operand
     for (i = 0, j = 2; buf[j] != '|'; ++i, ++j) {
-        op1_str[i] = buf[j];
+    	operator1stTostr[i] = buf[j];
     }
 
-    // gets the substring containing the 2nd operand
+    // gets the 2nd operand
     for (i = 0, j = j + 1; buf[j] != '\0'; ++i, ++j) {
-        op2_str[i] = buf[j];
+    	operator2stTostr[i] = buf[j];
     }
 
-    // converts the operand strings into integers
-    op1 = strtol(op1_str, NULL, 0);
-    op2 = strtol(op2_str, NULL, 0);
+    // converts the operand strings to integers
+    operator1st = strtol(operator1stTostr, NULL, 0);
+    operator2st = strtol(operator2stTostr, NULL, 0);
 
     char tmp[OPSIZE + 1] = "";
 
-    switch(opcode) {
+
+    switch(operand) {
     case '+':
         strcpy(answermsg, "Addition result: ");
-        snprintf(tmp, OPSIZE,"%d", add(op1,op2));
+        snprintf(tmp, OPSIZE,"%d", add(operator1st,operator2st));  //convert integer in to string
         strcat(answermsg, tmp);
         break;
     case '-':
         strcpy(answermsg, "Subtraction result: ");
-        snprintf(tmp, OPSIZE,"%d", sub(op1,op2));
+        snprintf(tmp, OPSIZE,"%d", sub(operator1st,operator2st));  //convert integer in to string
         strcat(answermsg, tmp);
         break;
     case '*':
         strcpy(answermsg, "Multiplication result: ");
-        snprintf(tmp, OPSIZE,"%d", mult(op1,op2));
+        snprintf(tmp, OPSIZE,"%d", mult(operator1st,operator2st));  //convert integer in to string
         strcat(answermsg, tmp);
         break;
     case '/':
-        if (op2 != 0) {
+        if (operator2st != 0) {
             strcpy(answermsg, "Division result: ");
-            snprintf(tmp, OPSIZE,"%.2f", division(op1,op2));
+            snprintf(tmp, OPSIZE,"%.2f", division(operator1st,operator2st)); //convert integer in to string
             strcat(answermsg, tmp);
         } else {
-            strcpy(answermsg, "Error! attempt to divide by 0!");
+            strcpy(answermsg, "Error! cannot divide by 0!");
         }
         break;
     case '=':
-    	strcpy(answermsg, "END CLIENT PROCESS");
+    	strcpy(answermsg, "CLOSING CLIENT CONNECTION");
      	break;
     default:
-        strcpy(answermsg, "END CLIENT PROCESS");  // If any error accurred, by default the server sends the closing string message
+        strcpy(answermsg, "CLOSING CLIENT CONNECTION"); // If any error accurred, by default the server sends the closing string message
         break;
     }
 }
+
 
 
 #endif /* PROTOCOL_H_ */

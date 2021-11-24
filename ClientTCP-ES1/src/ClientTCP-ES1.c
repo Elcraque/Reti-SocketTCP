@@ -66,16 +66,16 @@ int main(void){
     printf("%s\n\n", buf); // prints the message received from the server
 
     char input_operation[MSGSIZE] = "";
-    char opcode;// contains an operation code (+ = Addition, - = Subtraction, * = Multiplication, / = Division, = 0 0 to quit)
-    int op1; // 1st operand
-    int op2; // 2nd operand
+    char operatorcode;// operation code (+ = Addition, - = Subtraction, * = Multiplication, / = Division, = 0 0 to quit)
+    int firstop; // 1st operand
+    int secondop; // 2nd operand
     // temporary flags variable
     char op1_flag[OPSIZE] = "";
     char op2_flag[OPSIZE] = "";
 
-    // temporary buffers to convert operands into strings
-    char op1_str[OPSIZE] = "";
-    char op2_str[OPSIZE] = "";
+    // temporary buffers of converted operands into strings
+    char op1Tostr[OPSIZE] = "";
+    char op2Tostr[OPSIZE] = "";
 
     int parse=0; // argument number in the inputstring
     char msg[MSGSIZE + 1] = ""; // message for the server
@@ -91,15 +91,15 @@ int main(void){
     		 puts("Error!Argument number don t match");
     	 }else{
 
-    		 opcode = input_operation[0];
-    		 op1 = atoi(getfield(input_operation,2));
-    		 snprintf(op1_str, OPSIZE, "%d", op1); //printing the 1st operator in an array of chars
-    		 op2 = atoi(getfield(input_operation,3));
-    		 snprintf(op2_str, OPSIZE, "%d", op2); //printing the 2nd operator in an array of chars
+    		 operatorcode = input_operation[0];
+    		 firstop = atoi(getfield(input_operation,2));
+    		 snprintf(op1Tostr, OPSIZE, "%d", firstop); //printing the 1st operator in an array of chars
+    		 secondop = atoi(getfield(input_operation,3));
+    		 snprintf(op2Tostr, OPSIZE, "%d", secondop); //printing the 2nd operator in an array of chars
     		 strcpy(op1_flag,getfield(input_operation,2));
     		 strcpy(op2_flag,getfield(input_operation,3));
 
-    		 if(isoperator(opcode) != TRUE){
+    		 if(isoperator(operatorcode) != TRUE){
     			 puts("Error! Invalid operator");
     		 }
     		 if(isoperand(op1_flag) != TRUE || isoperand(op2_flag) != TRUE){
@@ -107,20 +107,20 @@ int main(void){
     		 }
     	 }
 
-    }while(isoperator(opcode) != TRUE || isoperand(op1_flag) != TRUE || isoperand(op2_flag) != TRUE ||  parse != 3);
+    }while(isoperator(operatorcode) != TRUE || isoperand(op1_flag) != TRUE || isoperand(op2_flag) != TRUE ||  parse != 3);
 
     // builds the message for the server
+        //operator message buildig
+    msg[0] = operatorcode; // saves the operation code
+    msg[1] = '|'; // adding separator character
+    	//1st operand message building
+    strcat(msg, op1Tostr); // copies the 1st operand
+    msg[strlen(msg)] = '|'; // adding separator character
+    	//2nd operand message building
+    strcat(msg, op2Tostr); // copies the 2nd operand
+    msg[strlen(msg)] = '\0'; // adding the termination character
 
-    msg[0] = opcode; // writes the operation code
-    msg[1] = '|'; // separator character
-
-    strcat(msg, op1_str); // copies the first operand
-    msg[strlen(msg)] = '|'; // separator character
-
-    strcat(msg, op2_str); // copies the second operand
-    msg[strlen(msg)] = '\0'; // adds the termination character
-
-    // sends the message to the server
+    // sends the message
     int msglen = strlen(msg);
     if (send(c_socket, msg, msglen, 0) != msglen) {
         fprintf(stderr, "send() sent a different number of bytes than expected.");
@@ -139,10 +139,10 @@ int main(void){
     }
     buf[bytesRcvd] = '\0';
 
-    // if recive END CLIENT PROCESS, close the client else print the result
+    // if recive CLOSING CLIENT CONNECTION, close the client else print the result
     puts("");
-    if (strcmp(buf, "END CLIENT PROCESS") == 0) {
-        puts("closing connection");
+    if (strcmp(buf, "CLOSING CLIENT CONNECTION") == 0) {
+        puts("Closing Client Connection!");
     } else {
         puts(buf);
     }
@@ -151,7 +151,7 @@ int main(void){
     closesocket(c_socket);
     clearwinsock();
 
-    printf("\nPress enter to quit...");
+    printf("\nPress enter to quit-> ");
     getchar();
 
     return 0;
