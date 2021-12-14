@@ -46,21 +46,29 @@ int main(void){
 	char answermsg[ANSSIZE + 1] = ""; // answer for the client
 	int recvMsgSize;
 
-	puts("Server Started!");
+	printf("Server Started on Port: %d \n",PORT);
 	while(1) {
-			cliAddrLen = sizeof(echoClntAddr);
-			recvMsgSize = recvfrom(sock, buf, BUFFERSIZE, 0, (struct
-					sockaddr*)&echoClntAddr, &cliAddrLen);
-			printf("Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
-			printf("Operation Requested: %s from Cient: %s \n", buf, inet_ntoa(echoClntAddr.sin_addr));
-
-			// computes the result and builds a message for the client
-			        calculate(answermsg, buf);
-
-			// INVIA LA STRINGA  AL CLIENT
-			if (sendto(sock, answermsg, strlen(answermsg), 0, (struct sockaddr *)&echoClntAddr,
-					sizeof(echoClntAddr)) != strlen(answermsg))
-				puts("sendto() sent different number of bytes than expected");
+		cliAddrLen = sizeof(echoClntAddr);
+		memset(buf, 0, BUFFERSIZE); // cleans the buffer
+		recvMsgSize = recvfrom(sock, buf, BUFFERSIZE, 0, (struct
+				sockaddr*)&echoClntAddr, &cliAddrLen);
+		// prints client's host name and IP
+		struct hostent *host;
+		if ((host = gethostbyaddr((char*) &echoClntAddr.sin_addr, 4, AF_INET)) == NULL) {
+			puts("gethostbyaddr() failed.");
+			return -1;
 		}
+		char *clientName = host->h_name;
+		printf("Handling client %s \n", clientName);
+		printf("Operation Requested: %s from Client: %s IP: %s \n", buf, clientName, inet_ntoa(echoClntAddr.sin_addr));
+
+		// computes the result and builds a message for the client
+		calculate(answermsg, buf);
+
+		// INVIA LA STRINGA  AL CLIENT
+		if (sendto(sock, answermsg, strlen(answermsg), 0, (struct sockaddr *)&echoClntAddr,
+				sizeof(echoClntAddr)) != strlen(answermsg))
+			puts("sendto() sent different number of bytes than expected");
+	}
 }
 

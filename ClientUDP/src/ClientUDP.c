@@ -15,6 +15,8 @@
 #include "protocol.h"
 
 int main(void){
+	//int port;
+	//char* host;
 #if defined WIN32
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2 ,2), &wsaData);
@@ -29,14 +31,66 @@ int main(void){
 	if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 		puts("socket() failed");
 	}
+	//
+	/*if(argc != 2){
+		puts("Error in input command line.IP and PORT will be setted automatically");
+	} else{
+		char inputStr[ANSSIZE];
+		strcpy(inputStr,argv[1]);
+		int i = 0;
+		int j = 0;
 
+		// gets the host
+		for (i = 0, j = 0; inputStr[j] != ':'; ++i, ++j) {
+			//host = inputStr[j];
+		}
+
+		// gets the port
+		for (i = 0, j = j + 1; inputStr[j] != '\0'; ++i, ++j) {
+			//port = atoi(inputStr[j]);
+		}
+	}*/
+	// DNS INTERROGATION
+	char serverName[BUFFERSIZE] = ""; // server host name
+	short port; // server port
+	char tmp[BUFFERSIZE] = ""; // buffer to receive a string
+
+	// asks the user for the server host name
+	puts("Insert server name: ");
+
+	fgets(tmp, BUFFERSIZE, stdin);
+	sscanf(tmp, "%[^\n]", serverName);
+
+	// asks the user for the server port number
+	do {
+		puts("Insert the server's port number (server setted on port 80): ");
+
+		fgets(tmp, BUFFERSIZE, stdin);
+		sscanf(tmp, "%hi", &port);
+
+		if (port > 5000) {
+			printf("Invalid port number!\nPort number must be smaller than 5000\n");
+		}
+
+	} while (port > 5000);
+
+	struct hostent *host;
+
+	if ((host = gethostbyname(serverName)) == NULL) {
+		puts("gethostbyname() failed.");
+		return -1;
+	}
+
+	struct in_addr *ina = (struct in_addr*) host->h_addr_list[0];
+	printf("Server IP: %s\n\n", inet_ntoa(*ina));
 	// COSTRUZIONE DELL'INDIRIZZO DEL SERVER
 	struct sockaddr_in echoServAddr;
 	struct sockaddr_in fromAddr;
 	memset(&echoServAddr, 0, sizeof(echoServAddr));
 	echoServAddr.sin_family = PF_INET;
-	echoServAddr.sin_port = htons(PORT);
-	echoServAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	echoServAddr.sin_port = htons(port);
+	echoServAddr.sin_addr.s_addr = ina->s_addr;
+	//echoServAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	// AQUISIZIONE OPERAZIONE
 	char input_operation[MSGSIZE] = "";

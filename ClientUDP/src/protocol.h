@@ -128,35 +128,35 @@ void calculate(char *answermsg, const char *buf){
 
     switch(operand) {
     case '+':
-        strcpy(answermsg, "Addition result: ");
-        snprintf(tmp, OPSIZE,"%d", add(operator1st,operator2st));  //convert integer in to string
-        strcat(answermsg, tmp);
-        break;
+    	strcpy(answermsg, "Addition result: ");
+    	snprintf(tmp, OPSIZE,"%d + %d = %d", operator1st, operator2st, add(operator1st,operator2st));  //convert integer in to string
+    	strcat(answermsg, tmp);
+    	break;
     case '-':
-        strcpy(answermsg, "Subtraction result: ");
-        snprintf(tmp, OPSIZE,"%d", sub(operator1st,operator2st));  //convert integer in to string
-        strcat(answermsg, tmp);
-        break;
+    	strcpy(answermsg, "Subtraction result: ");
+    	snprintf(tmp, OPSIZE,"%d - %d = %d", operator1st, operator2st, sub(operator1st,operator2st));  //convert integer in to string
+    	strcat(answermsg, tmp);
+    	break;
     case '*':
-        strcpy(answermsg, "Multiplication result: ");
-        snprintf(tmp, OPSIZE,"%d", mult(operator1st,operator2st));  //convert integer in to string
-        strcat(answermsg, tmp);
-        break;
+    	strcpy(answermsg, "Multiplication result: ");
+    	snprintf(tmp, OPSIZE,"%d * %d = %d", operator1st, operator2st, mult(operator1st,operator2st));  //convert integer in to string
+    	strcat(answermsg, tmp);
+    	break;
     case '/':
-        if (operator2st != 0) {
-            strcpy(answermsg, "Division result: ");
-            snprintf(tmp, OPSIZE,"%.2f", division(operator1st,operator2st)); //convert integer in to string
-            strcat(answermsg, tmp);
-        } else {
-            strcpy(answermsg, "Error! cannot divide by 0!");
-        }
-        break;
+    	if (operator2st != 0) {
+    		strcpy(answermsg, "Division result: ");
+    		snprintf(tmp, OPSIZE,"%d / %d = %.2f", operator1st, operator2st, division(operator1st,operator2st)); //convert integer in to string
+    		strcat(answermsg, tmp);
+    	} else {
+    		strcpy(answermsg, "Error! cannot divide by 0!");
+    	}
+    	break;
     case '=':
     	strcpy(answermsg, "CLOSING CLIENT CONNECTION");
-     	break;
+    	break;
     default:
-        strcpy(answermsg, "CLOSING CLIENT CONNECTION"); // If any error accurred, by default the server sends the closing string message
-        break;
+    	strcpy(answermsg, "CLOSING CLIENT CONNECTION"); // If any error accurred, by default the server sends the closing string message
+    	break;
     }
 }
 
